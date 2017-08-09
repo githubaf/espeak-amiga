@@ -1,0 +1,82 @@
+
+Short:        amiga-port of espeak speech synthesizer
+Author:       jonsd at users.sourceforge.net (Jonathan Duddington)
+Uploader:     selco at t-online.de (Alexander Fritsch)
+Type:         util/sys
+Version:      1.1
+Architecture: m68k-amigaos
+Distribution: Aminet
+
+
+This is the amiga port of Jonatham Duddingtons's speech synthesizer
+espeak. It should behave exactly as the original.
+
+It is based on the espeak 1.48.15.
+
+With espeak you can create speech in several languages. You can output
+speech via the audio.device (default). If your amiga is to slow to
+render the sound in real-time you can write it to a wav-file for later
+playback.
+
+
+Installation:
+Copy the contents of the lha file to the desired place. There is
+the espeak executable itself and a drawer espeak-data which contains
+the voice files. Add the destination drawer to the your path variable 
+if necessary.
+There are no other dependencies. Neither translator.library nor
+narrator.device are needed.
+The standard stack size (4096 bytes) should be sufficient.
+
+Usage:
+Please check the internet for espeak usage examples. 
+A few examples are listed below.
+
+; show help
+espeak --help
+
+; say something 
+espeak "This is Amiga speaking."
+
+; create a sound-file instead of speaking
+espeak -w speech.wav "This is Amiga speaking."
+
+; show available languages
+espeak --voices
+
+; say something in German
+espeak -v de "Das Pferd frisst keinen Gurkensalat."
+
+; There are several voice variants. (Look into the !v drawer.)
+; show available voice variants
+espeak --voices=variant
+
+
+; speak something with a female voice variant
+espeak -v +f1 "This is Amiga speaking in a femail voice."
+
+; or in German again
+espeak -v de+f2 "Fischers Fritze fischte frische Fische. Frische Fische fischte Fischers Fritze."
+
+; espeak can even whisper
+espeak -v +whisper "Espeak is now also available for the Amiga Computer. But don't tell anybody!"
+
+; or in German
+espeak -v de+whisperf "Das ist ein Geheimnis!"
+
+; let espeak read a file
+espeak -f s:startup-sequence
+
+; let espeak speak line by line as you type
+
+espeak
+This
+is Amiga
+speaking.
+
+
+; Press CTRL-C (and ENTER if necessary) to abort espeak and return to the shell.
+
+
+
+
