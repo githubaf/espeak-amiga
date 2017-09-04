@@ -24,6 +24,8 @@
 
 #include <exec/types.h>
 #include "subtask_support.h"
+#include <proto/dos.h>
+
 #include <clib/exec_protos.h>
 #include <graphics/gfxbase.h>
 #include <clib/alib_protos.h>  
@@ -37,6 +39,8 @@ static struct timeval startTime;
 void startup() {
   GetSysTime(&startTime);
 }
+
+extern unsigned int global_bufsize_factor;   
 
 ULONG getMilliseconds() {
     struct timeval endTime;
@@ -79,19 +83,21 @@ typedef struct
 UWORD Convert16SSamples(SHORT *Source16S, BYTE *Dest8S, ULONG SampleCount);  
 
 struct Device* TimerBase;         
-static struct IORequest timereq;  
+
 VOID  EspeakAudioTask(VOID)
 {
-	struct SubTask *st;
+    struct Task *me = FindTask(NULL);
+    struct SubTask *st;
+    struct SubTaskMsg *stm;
 
-	st = InitSubTask();
-	if (st)
+    WaitPort(&((struct Process *)me)->pr_MsgPort);
+    stm  = (struct SubTaskMsg *)GetMsg(&((struct Process *)me)->pr_MsgPort);
+    st   = (struct SubTask *)stm->stm_Parameter;
+
 	{
 		
 		BOOL running = TRUE;
 		BOOL worktodo = FALSE;
-	struct SubTaskMsg *stm;
-
 		PortAudioStreamStruct *PortAudioStreamData=(PortAudioStreamStruct*)(st->st_Data);
 		int Error=paInternalError;
 		PortAudioStreamData->port1=CreatePort(0,0);
@@ -120,12 +126,16 @@ VOID  EspeakAudioTask(VOID)
 																	   
 					PortAudioStreamData->AIOptr1->ioa_Request.io_Message.mn_ReplyPort=PortAudioStreamData->port1;
 					PortAudioStreamData->AIOptr2->ioa_Request.io_Message.mn_ReplyPort=PortAudioStreamData->port2;
+					if ((st->st_Port = CreateMsgPort()))
+					{
+						struct IOAudio *Aptr=NULL;  
+						struct MsgPort *port=NULL;  
+						BYTE *ChipMemBuf=NULL;      
+						SHORT *FastMemBuf=NULL;     
+						stm->stm_Result = TRUE;
+				        ReplyMsg((struct Message *)stm);
 					for (;;)
 					{
-						struct IOAudio *Aptr;  
-						struct MsgPort *port;  
-						BYTE *ChipMemBuf;      
-						SHORT *FastMemBuf;     
 						while ((stm = (struct SubTaskMsg *)GetMsg(st->st_Port)))
 						{
 							switch (stm->stm_Command)
@@ -212,7 +222,7 @@ VOID  EspeakAudioTask(VOID)
 
     							if(Aptr==(struct IOAudio*)PortAudioStreamData->AIOptr1)
     							{
-    								Aptr=PortAudioStreamData->AIOptr2;
+  									Aptr=PortAudioStreamData->AIOptr2;
     								port=PortAudioStreamData->port2;
     								FastMemBuf=PortAudioStreamData->FastMemBuf2;
     								ChipMemBuf=PortAudioStreamData->ChipMemBuf2;
@@ -240,6 +250,14 @@ VOID  EspeakAudioTask(VOID)
 					BeginIO((struct IORequest*)PortAudioStreamData->AIOptr1);
 					PortAudioStreamData->AIOptr2->ioa_Request.io_Command=ADCMD_FINISH;
 					BeginIO((struct IORequest*)PortAudioStreamData->AIOptr2);
+					}
+					else  
+					{
+						printf("    Subtask CreateMsgPort() failed\n");
+						Error=paInsufficientMemory;
+					}
+					CloseDevice((struct IORequest*)PortAudioStreamData->AIOptr1);
+					PortAudioStreamData->device=1;
 				}
 				else
 				{
@@ -341,7 +359,7 @@ PaError Pa_OpenDefaultStream( PortAudioStream** stream,
 			StreamStruct->AF_StreamID=StreamNr;
 			StreamNr++;
 			StreamStruct->callback=callback;  
-			StreamStruct->framesPerBuffer=framesPerBuffer;
+			StreamStruct->framesPerBuffer=framesPerBuffer*global_bufsize_factor;   
 			StreamStruct->numInputChannels=numInputChannels;
 			StreamStruct->numOutputChannels=numOutputChannels;
 			StreamStruct->sampleFormat=sampleFormat;

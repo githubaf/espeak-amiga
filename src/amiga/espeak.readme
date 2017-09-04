@@ -1,9 +1,9 @@
 
 Short:        amiga-port of espeak speech synthesizer
-Author:       jonsd at users.sourceforge.net (Jonathan Duddington)
-Uploader:     selco at t-online.de (Alexander Fritsch)
+Author:       jonsd@users.sourceforge.net (Jonathan Duddington)
+Uploader:     selco@t-online.de (Alexander Fritsch)
 Type:         util/sys
-Version:      1.1
+Version:      1.2
 Architecture: m68k-amigaos
 Distribution: Aminet
 
@@ -79,4 +79,9 @@ speaking.
 
 
 
+History:
+Version 1.1
+	Initial Aminet realease
 
+Version 1.2
+	Fixed an Enforcer-Hit / Hang in case audio.device could not be opened.

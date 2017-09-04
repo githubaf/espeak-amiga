@@ -68,6 +68,8 @@ unsigned int samples_split = 0;
 unsigned int wavefile_count = 0;
 int end_of_sentence = 0;
 
+unsigned int global_bufsize_factor=1;   // AF Test einstellbare Audio Buffergroesse n mal 512 Bytes
+
 static const char *help_text =
 "\nspeak [options] [\"<words>\"]\n\n"
 "-f <text file>   Text file to speak\n"
@@ -533,6 +535,7 @@ int main (int argc, char **argv)
 		{"version", no_argument,       0, 0x10b},
 		{"sep",     optional_argument, 0, 0x10c},
 		{"tie",     optional_argument, 0, 0x10d},
+		{"bufsize", optional_argument, 0, 0x10e}, // AF Test mit groesseren Audio Puffern, Vielfache von 512
 		{0, 0, 0, 0}
 		};
 
@@ -849,6 +852,22 @@ int main (int argc, char **argv)
 				if(phonemes_separator == 'z')
 					phonemes_separator = 0x200d;  // ZWJ
 			break;
+// ###################################################################
+//    Test AF
+		case 0x10e:   // -- bufsize
+			if(optarg2 == NULL)
+			{
+				global_bufsize_factor=1;  // default 512 Bytes
+			}
+			else
+			{
+				global_bufsize_factor = atoi(optarg2);
+				if(!global_bufsize_factor) { global_bufsize_factor=1; } // mindestens 1
+			}
+
+			break;
+// ###################################################################
+
 
 		default:
 			exit(0);
@@ -857,6 +876,12 @@ int main (int argc, char **argv)
 
 	init_path(argv[0],data_path);
 	initialise();
+
+	// Test AF
+	if(1!=global_bufsize_factor)
+	{
+		printf("Audiobuffer Size %u (%uBytes, %ums)\n",global_bufsize_factor, global_bufsize_factor*512,global_bufsize_factor*512*1000/samplerate);
+	}
 
 	if(voicename[0] == 0)
 		strcpy(voicename,"default");
