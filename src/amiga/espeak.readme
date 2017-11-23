@@ -3,7 +3,7 @@ Short:        amiga-port of espeak speech synthesizer
 Author:       jonsd@users.sourceforge.net (Jonathan Duddington)
 Uploader:     selco@t-online.de (Alexander Fritsch)
 Type:         util/sys
-Version:      1.2
+Version:      1.3
 Architecture: m68k-amigaos
 Distribution: Aminet
 
@@ -11,7 +11,7 @@ Distribution: Aminet
 This is the amiga port of Jonatham Duddingtons's speech synthesizer
 espeak. It should behave exactly as the original.
 
-It is based on the espeak 1.48.15.
+It is based on espeak 1.48.15.
 
 With espeak you can create speech in several languages. You can output
 speech via the audio.device (default). If your amiga is to slow to
@@ -20,10 +20,10 @@ playback.
 
 
 Installation:
-Copy the contents of the lha file to the desired place. There is
-the espeak executable itself and a drawer espeak-data which contains
-the voice files. Add the destination drawer to the your path variable 
-if necessary.
+Copy the contents of the lha file to the desired place. There are
+the espeak executables in different cpu/fpu flavours and a drawer espeak-data 
+which contains the voice files. Add the destination drawer to the your 
+path variable if necessary.
 There are no other dependencies. Neither translator.library nor
 narrator.device are needed.
 The standard stack size (4096 bytes) should be sufficient.
@@ -81,7 +81,12 @@ speaking.
 
 History:
 Version 1.1
-	Initial Aminet realease
+	*Initial Aminet realease
 
 Version 1.2
-	Fixed an Enforcer-Hit / Hang in case audio.device could not be opened.
+	*Fixed an Enforcer-Hit / Hang in case audio.device could not be opened.
+
+Version 1.3
+	*Audio is now played from left and right channel, i.e. comming from the center
+	*espeak is now compiled in 3 flavours: plain 68k, 68020-60 and 68020-60+fpu
+

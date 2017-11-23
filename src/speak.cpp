@@ -69,6 +69,7 @@ unsigned int wavefile_count = 0;
 int end_of_sentence = 0;
 
 unsigned int global_bufsize_factor=1;   // AF Test einstellbare Audio Buffergroesse n mal 512 Bytes
+unsigned int global_benchmark_flag=0;   // AF Einschalten der Ausgabe der durchschnittlichen Zeit fuer die portaudio-Callbackfunktion
 
 static const char *help_text =
 "\nspeak [options] [\"<words>\"]\n\n"
@@ -482,8 +483,9 @@ static int initialise(void)
 #endif
 
 #ifdef __AMIGA__
-#include <exec/exec.h>
-#include <clib/exec_protos.h>
+	#include <exec/exec.h>
+	#include <clib/exec_protos.h>
+	extern "C" void __chkabort(void);      /* check for SIGABRT */
 #endif
 
 /* for atexit()
@@ -509,9 +511,14 @@ void ShowTotalSTackUsage(void)
 	void Abort_Pa_CloseStream(void);   /* used for in atexit() for CTRL-C handling */
 #endif
 
+char *global_ProgramName; /* for amiga debugging */
+
 int main (int argc, char **argv)
 //==============================
 {
+
+	global_ProgramName=argv[0];
+
 	static struct option long_options[] =
 		{
 		/* These options set a flag. */
@@ -536,6 +543,7 @@ int main (int argc, char **argv)
 		{"sep",     optional_argument, 0, 0x10c},
 		{"tie",     optional_argument, 0, 0x10d},
 		{"bufsize", optional_argument, 0, 0x10e}, // AF Test mit groesseren Audio Puffern, Vielfache von 512
+		{"benchmark",no_argument,      0, 0x10f}, // AF, Tesweise Ausfuehrungszeit der Portaudio-Callback-Funtion anzeigen
 		{0, 0, 0, 0}
 		};
 
@@ -854,7 +862,7 @@ int main (int argc, char **argv)
 			break;
 // ###################################################################
 //    Test AF
-		case 0x10e:   // -- bufsize
+		case 0x10e:   // --bufsize
 			if(optarg2 == NULL)
 			{
 				global_bufsize_factor=1;  // default 512 Bytes
@@ -867,7 +875,13 @@ int main (int argc, char **argv)
 
 			break;
 // ###################################################################
-
+			// AF, Tesweise Ausfuehrungszeit der Portaudio-Callback-Funtion anzeigen
+		case 0x10f:   // --benchmark
+		{
+			global_benchmark_flag=1;
+			break;
+		}
+// ###################################################################
 
 		default:
 			exit(0);
@@ -1044,6 +1058,9 @@ int main (int argc, char **argv)
 #else
 			//sleep(1);
                         usleep(300000);   // AF
+			#ifdef __AMIGA__
+                        __chkabort();     // AF, look for CTRL-C
+			#endif
 #endif
 #endif
 			if(SynthOnTimer() != 0)

@@ -17,16 +17,36 @@
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
+#ifdef mc68060
+#define __CPU__ "mc68060"
+#elif defined  mc68040
+#define __CPU__ "mc68040"
+#elif  defined mc68030
+#define __CPU__ "mc68030"
+#elif  defined mc68020
+#define __CPU__ "mc68020"
+#elif  defined mc68000
+#define __CPU__ "mc68000"
+#else
+#define __CPU__ "???????"
+#endif
+
+#ifdef __HAVE_68881__
+#define __FPU__ "+mc68881"
+#else
+#define __FPU__ ""
+#endif
+
 
 
 #define      VERSION       "1"
-#define      REVISION      "2"                     /* Revision always starts with 1 ! */
+#define      REVISION      "3"                     /* Revision always starts with 1 ! */
 //#define      DATE          "15.07.2017"   /* comes from make-command line as CXXFLAGS+=-DDATE=\\\"$(date +'%d.%m.%Y')\\\" */
 #define      PROGNAME      "espeak"
 //#define      COMMENT       "BETA-Version, Alexander Fritsch, selco, based on espeak-1.48.15 by Jonathan Duddington"
 #define      COMMENT       "Alexander Fritsch, selco, based on espeak-1.48.15 by Jonathan Duddington"
 
 #define      VERS          PROGNAME" " VERSION "." REVISION
-#define      VERSTAG       "\0$VER: " PROGNAME " " VERSION "." REVISION " (" DATE ") " COMMENT
+#define      VERSTAG       "\0$VER: " PROGNAME " " VERSION "." REVISION " (" DATE ") " COMMENT ", compiled for " __CPU__  __FPU__
 
 char versiontag[] = VERSTAG;
