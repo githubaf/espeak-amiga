@@ -1,0 +1,123 @@
+# AF, Gwd, 18. Ict. 2017
+
+
+# to execute Amiga binaries under Linux we need vamos
+VAMOS=$(shell uname | grep -q -v AmigaOS && echo vamos)
+
+# set the right compiler
+
+#␣gcc2.95.3,␣this␣one␣produces␣fine␣code␣with␣-O2¬
+COMPILER_DIR=~/opt/m68k-amigaos/bin
+
+#COMPILER_DIR=~/opt/m68k-amigaos_gcc6/bin
+
+#␣this␣one␣produces␣fine␣code␣with␣-O2¬
+#COMPILER_DIR=~/opt/m68k-amigaos_1Feb/bin     # this one produces fine code with -O2
+
+CXX=$(shell uname | grep -q -v AmigaOS && echo $(COMPILER_DIR)/m68k-amigaos-gcc || echo gcc )
+
+
+TOOLCHAIN_VER=$(shell cat $(COMPILER_DIR)/toolchain_commit.txt)
+
+CPUFLAGS=-m68000      #can be overwritten at the command line
+# f crashes!
+OPTLEVEL=-O2 # -fomit-frame-pointer #-fbbb=abcimprseVf #-fbbb=abcimprseVf  #f     # abcfimprse   #e          #can be overwritten at the command line
+
+CXXFLAGS+=-fpermissive
+#CXXFLAGS+=-DSHOW_AMIGA_STACK
+CXXFLAGS+=-DSAVESTACK=static
+CXXFLAGS+=-Iamiga/
+CXXFLAGS+=-DENV_HOME=\\"Ram:t\\"
+CXXFLAGS+=-DDATE="\"$(shell /bin/date +'%d.%m.%Y')\""
+CXXFLAGS+=-DNO_VARIADIC_MACROS 
+CXXFLAGS+=-DNO_INLINE_STDARG -DNO_INLINE_VARARGS 
+CXXFLAGS+=-DNEED_GETOPT 
+CXXFLAGS+=-DNEED_WCHAR_FUNCTIONS 
+CXXFLAGS+=-DNO_USE_NANOSLEEP 
+CXXFLAGS+=-g                 #debug
+CXXFLAGS+=$(OPTLEVEL)
+CXXFLAGS+=$(CPUFLAGS)
+CXXFLAGS+=-DTOOLCHAIN_VER="\"$(TOOLCHAIN_VER)\""
+
+LIBS1+=-lm 
+LIBS1+=-ldebug 
+
+LDFLAGS+=-noixemul
+LDFLAGS+=$(CPUFLAGS)  #can be given at the command line
+LDFLAGS+=-g                  #debug
+LDFLAGS+=-Wl,-Map=espeak.map,--trace
+
+
+
+
+DATADIR=PROGDIR:espeak-data
+
+
+BIN_NAME = espeak
+
+
+WAVE=wave.cpp
+LIB_AUDIO=-lportaudio
+USE_AUDIO=-DUSE_PORTAUDIO
+
+
+vpath  portaudio.cpp amiga/portaudio/
+vpath  portaudio_audev.cpp amiga/portaudio/
+vpath  portaudio_ahidev.cpp amiga/portaudio/
+vpath  subtask_support.cpp amiga/portaudio/
+vpath  mkstemp.cpp amiga/mkstemp/
+vpath  amiga_version.cpp amiga/version
+
+speak_SOURCES = speak.cpp compiledict.cpp dictionary.cpp intonation.cpp \
+	readclause.cpp setlengths.cpp numbers.cpp synth_mbrola.cpp \
+	synthdata.cpp synthesize.cpp translate.cpp mbrowrap.cpp \
+	tr_languages.cpp voices.cpp wavegen.cpp phonemelist.cpp klatt.cpp sonic.cpp \
+	portaudio.cpp portaudio_audev.cpp portaudio_ahidev.cpp subtask_support.cpp \
+	mkstemp.cpp amiga_version.cpp
+
+SRCS1=$(speak_SOURCES)
+OBJS1=$(patsubst %.cpp,%.o,$(SRCS1))
+#LIBS1=-lstdc++ $(LIB_AUDIO) -lpthread $(EXTRA_LIBS)
+
+all: $(BIN_NAME) fopen_test $(COMPILER_DIR)/toolchain_commit.txt 
+
+# we want the git commit hash
+$(COMPILER_DIR)/toolchain_commit.txt:
+	@echo
+	@echo "#############################################################################"
+	@echo "toolchain_commit.txt not found in $(COMPILER_DIR), Please create one!"
+	@echo "cd $(COMPILER_DIR)"
+	@echo␣ echo https/:github.com/... > $PREFIX/bin/toolchain_commit.txt
+	@echo "git log -1 >>toolchain_commit.txt"
+	@echo "#############################################################################"
+	@echo
+	@false
+
+
+.cpp.o:
+	$(CXX) $(CXXFLAGS) $(USE_AUDIO) -D PATH_ESPEAK_DATA=\"$(DATADIR)\" -Wall -pedantic -I. -c -fno-exceptions  $<
+
+$(BIN_NAME): $(OBJS1)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJS1) $(LIBS1)
+
+
+x_%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(USE_AUDIO) -D PATH_ESPEAK_DATA=\"$(DATADIR)\" -Wall -fpic -fvisibility=hidden -pedantic \
+	-I. -D LIBRARY -c -fno-exceptions  $<  -o x_$*.o
+
+clean:
+	rm -f *.o *.a *~ fopen_test
+
+distclean: clean
+	rm -f $(BIN_NAME)
+
+install: all
+	@echo "Install not implemented"
+
+
+
+fopen_test: amiga/fopen_test.c
+	$(CXX)  -Wall -pedantic -I. -c amiga/fopen_test.c
+	$(CXX)  -noixemul -o $@ fopen_test.o $(LIBS1)
+	echo "Hello" | $(VAMOS) ./fopen_test || rm fopen_test
+	

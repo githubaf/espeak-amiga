@@ -16,39 +16,39 @@
  *   along with this program; if not, write see:                           *
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
+/*
+ * portaudio_audev.h
+ *
+ *  Created on: Nov 28, 2017
+ *      Author: Alexander Fritsch
+ */
 
-#ifdef mc68060
-#define __CPU__ "mc68060"
-#elif defined  mc68040
-#define __CPU__ "mc68040"
-#elif  defined mc68030
-#define __CPU__ "mc68030"
-#elif  defined mc68020
-#define __CPU__ "mc68020"
-#elif  defined mc68000
-#define __CPU__ "mc68000"
-#else
-#define __CPU__ "???????"
-#endif
+#ifndef SRC_AMIGA_PORTAUDIO_PORTAUDIO_AUDEV_H_
+#define SRC_AMIGA_PORTAUDIO_PORTAUDIO_AUDEV_H_
 
-#ifdef __HAVE_68881__
-#define __FPU__ "+mc68881"
-#else
-#define __FPU__ ""
-#endif
+#include "../portaudio18.h"
+
+/* prototypes to be used in general portaudio.cpp only */
+
+PaError Pa_StartStream_audev( PortAudioStream *stream );
+PaError Pa_AbortStream_audev( PortAudioStream *stream );
+PaError Pa_StreamActive_audev( PortAudioStream *stream );
+PaError Pa_OpenDefaultStream_audev( PortAudioStream** stream,
+		int numInputChannels,
+		int numOutputChannels,
+		PaSampleFormat sampleFormat,
+		double sampleRate,
+		unsigned long framesPerBuffer,
+		unsigned long numberOfBuffers,
+		PortAudioCallback *callback,
+		void *userData );
+PaError Pa_CloseStream_audev( PortAudioStream *stream );
+PaError Pa_Initialize_audev( void );
+PaError Pa_GetSampleSize_audev( PaSampleFormat format );
+void Abort_Pa_CloseStream_audev (void);
 
 
 
-#define      VERSION       "2"
-#define      REVISION      "1"                     /* Revision always starts with 1 ! */
-//#define      DATE          "15.07.2017"   /* comes from make-command line as CXXFLAGS+=-DDATE=\\\"$(date +'%d.%m.%Y')\\\" */
-#define      PROGNAME      "espeak"
-//#define      COMMENT       "BETA-Version, Alexander Fritsch, selco, based on espeak-1.48.15 by Jonathan Duddington"
-#define      COMMENT       "Alexander Fritsch, selco, based on espeak-1.48.15 by Jonathan Duddington"
 
-#define      VERS          PROGNAME" " VERSION "." REVISION
-#define      VERSTAG       "\0$VER: " PROGNAME " " VERSION "." REVISION " (" DATE ") " COMMENT ", compiled for " __CPU__  __FPU__
 
-char versiontag[] = VERSTAG;
-
-char toolchain_ver[] = "\0$TOOLCHAIN_VER: " TOOLCHAIN_VER;   /* This macro comes from Makefile.amiga and contains git hash */
+#endif /* SRC_AMIGA_PORTAUDIO_PORTAUDIO_AUDEV_H_ */

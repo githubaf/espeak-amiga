@@ -3,20 +3,20 @@ Short:        amiga-port of espeak speech synthesizer
 Author:       jonsd@users.sourceforge.net (Jonathan Duddington)
 Uploader:     selco@t-online.de (Alexander Fritsch)
 Type:         util/sys
-Version:      1.3
+Version:      2.1
 Architecture: m68k-amigaos
 Distribution: Aminet
 
 
-This is the amiga port of Jonatham Duddingtons's speech synthesizer
+This is the amiga port of Jonathan Duddingtons's speech synthesizer
 espeak. It should behave exactly as the original.
 
 It is based on espeak 1.48.15.
 
 With espeak you can create speech in several languages. You can output
-speech via the audio.device (default). If your amiga is to slow to
-render the sound in real-time you can write it to a wav-file for later
-playback.
+speech via the audio.device (default) or via the ahi.device (--ahi=unit). 
+If your amiga is not fast enough to render the sound in real-time you 
+can write it to a wav-file for later playback.
 
 
 Installation:
@@ -89,4 +89,9 @@ Version 1.2
 Version 1.3
 	*Audio is now played from left and right channel, i.e. comming from the center
 	*espeak is now compiled in 3 flavours: plain 68k, 68020-60 and 68020-60+fpu
+
+Version 2.1
+        *Added support for AHI. use --ahi or --ahi=unit (unit=0...3) to activate
+        *Fixed bug in --path handling
+
 

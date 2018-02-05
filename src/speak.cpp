@@ -101,6 +101,13 @@ static const char *help_text =
 "-x\t   Write phoneme mnemonics to stdout\n"
 "-X\t   Write phonemes mnemonics and translation trace to stdout\n"
 "-z\t   No final sentence pause at the end of the text\n"
+
+#ifdef __AMIGA__
+"--ahi=<unit>\n"
+"\t   use ahi.device instead of audio.device for sound output. If\n"
+"\t   =<unit> is omitted, unit 0 will be used.\n"
+#endif
+
 "--compile=<voice name>\n"
 "\t   Compile pronunciation rules and dictionary from the current\n"
 "\t   directory. <voice name> specifies the language\n"
@@ -362,11 +369,27 @@ static int WavegenFile(void)
 static void init_path(char *argv0, char *path_specified)
 {//=====================================================
 
+#ifdef __AMIGA__
+	if(path_specified)
+	{
+		if(path_specified[strlen(path_specified)-1]==':' || path_specified[strlen(path_specified)-1]=='/')
+		{
+			sprintf(path_home,"%sespeak-data",path_specified);  // "/" is "one directory up" on Amiga, so add only "espeak-data" if path ends with ":" or "/" instead of "/espeak-data"
+		}
+		else
+		{
+			sprintf(path_home,"%s/espeak-data",path_specified);
+		}
+
+		return;
+	}
+#else
 	if(path_specified)
 	{
 		sprintf(path_home,"%s/espeak-data",path_specified);
 		return;
 	}
+#endif
 
 #ifdef PLATFORM_WINDOWS
 	HKEY RegKey;
@@ -508,7 +531,8 @@ void ShowTotalSTackUsage(void)
 #endif
 
 #ifdef __AMIGA__
-	void Abort_Pa_CloseStream(void);   /* used for in atexit() for CTRL-C handling */
+    extern void (*Abort_Pa_CloseStream_FctPtr) (void);   /* used for in atexit() for CTRL-C handling */
+	void set_ahi_devide(unsigned int unit);
 #endif
 
 char *global_ProgramName; /* for amiga debugging */
@@ -542,8 +566,11 @@ int main (int argc, char **argv)
 		{"version", no_argument,       0, 0x10b},
 		{"sep",     optional_argument, 0, 0x10c},
 		{"tie",     optional_argument, 0, 0x10d},
+#ifdef __AMIGA__
 		{"bufsize", optional_argument, 0, 0x10e}, // AF Test mit groesseren Audio Puffern, Vielfache von 512
 		{"benchmark",no_argument,      0, 0x10f}, // AF, Tesweise Ausfuehrungszeit der Portaudio-Callback-Funtion anzeigen
+		{"ahi",     optional_argument, 0, 0x110}, // AF, use ahi.device instead of audio.device for sound output
+#endif
 		{0, 0, 0, 0}
 		};
 
@@ -572,7 +599,7 @@ int main (int argc, char **argv)
 
 // define comes from gcc
 #ifdef __AMIGA__
-	atexit(Abort_Pa_CloseStream);   /* delete task an cleanup Amiga resources in case of CTRL-C */
+	atexit(Abort_Pa_CloseStream_FctPtr);   /* delete task an cleanup Amiga resources in case of CTRL-C */
 #endif
 
 // define via command line if needed
@@ -862,6 +889,7 @@ int main (int argc, char **argv)
 			break;
 // ###################################################################
 //    Test AF
+#ifdef __AMIGA__
 		case 0x10e:   // --bufsize
 			if(optarg2 == NULL)
 			{
@@ -874,13 +902,41 @@ int main (int argc, char **argv)
 			}
 
 			break;
+#endif
 // ###################################################################
 			// AF, Tesweise Ausfuehrungszeit der Portaudio-Callback-Funtion anzeigen
+#ifdef __AMIGA__
 		case 0x10f:   // --benchmark
 		{
 			global_benchmark_flag=1;
 			break;
 		}
+#endif
+// ###################################################################
+            // AF, use ahi.device instead of audiodevice for sound-output
+#ifdef __AMIGA__
+		case 0x110:   // --ahi=unit
+		{
+			unsigned int ahi_unit;
+			if(optarg2 == NULL)
+			{
+				ahi_unit=0;  // default unit 0
+			}
+			else
+			{
+				ahi_unit = atoi(optarg2);
+				if(ahi_unit>3 || ahi_unit<0)
+				{
+					printf("Invalid AHI unit! (0...3)\n");
+					exit(4);
+				}
+			}
+
+			set_ahi_devide(ahi_unit);
+
+			break;
+		}
+#endif
 // ###################################################################
 
 		default:

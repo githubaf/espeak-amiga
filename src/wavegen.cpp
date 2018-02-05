@@ -17,6 +17,7 @@
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
+
 #include "StdAfx.h"
 
 // this version keeps wavemult window as a constant fraction
@@ -313,7 +314,7 @@ void WcmdqStop()
 	if(mbrola_name[0] != 0)
 		MbrolaReset();
 }
-
+//OK
 
 int WcmdqFree()
 {//============
@@ -341,7 +342,7 @@ static void WcmdqIncHead()
 	if(wcmdq_head >= N_WCMDQ) wcmdq_head=0;
 }
 
-
+//OK
 
 // data points from which to make the presets for pk_shape1 and pk_shape2
 #define PEAKSHAPEW 256
@@ -426,7 +427,7 @@ static void WavegenInitPkData(int which)
 #endif
 }  //  end of WavegenInitPkData
 
-
+//OK
 
 #ifdef USE_PORTAUDIO
 // PortAudio interface
@@ -437,6 +438,9 @@ static int out_channels=1;
 
 unsigned char *outbuffer = NULL;
 int outbuffer_size = 0;
+
+#pragma GCC push_options
+//#pragma GCC optimize ("-O0")
 
 
 #if USE_PORTAUDIO == 18
@@ -568,6 +572,10 @@ static int WaveCallback(const void *inputBuffer, void *outputBuffer,
 #endif
 
 }  //  end of WaveCallBack
+
+#pragma GCC pop_options
+
+
 
 
 #if USE_PORTAUDIO == 19
@@ -739,6 +747,7 @@ int WavegenInitSound()
 	return(0);
 }
 #endif
+
 
 
 void WavegenInit(int rate, int wavemult_fact)
@@ -985,6 +994,7 @@ int h2;
 
 
 
+
 static void AdvanceParameters()
 {//============================
 // Called every 64 samples to increment the formant freq, height, and widths
@@ -1164,6 +1174,9 @@ static int ApplyBreath(void)
 	return (value);
 }
 
+
+#pragma GCC push_options
+//#pragma GCC optimize ("-O0")
 
 
 int Wavegen()
@@ -1439,6 +1452,12 @@ int Wavegen()
 	return(0);
 }  //  end of Wavegen
 
+#pragma GCC pop_options
+
+
+#pragma GCC push_options
+//#pragma GCC optimize ("-O0")
+
 
 static int PlaySilence(int length, int resume)
 {//===========================================
@@ -1474,6 +1493,8 @@ static int PlaySilence(int length, int resume)
 	}
 	return(0);
 }  // end of PlaySilence
+
+#pragma GCC pop_options
 
 
 
@@ -2072,4 +2093,5 @@ int WavegenFill(int fill_zeros)
 #endif
 	return finished;
 }  // end of WavegenFill
+
 

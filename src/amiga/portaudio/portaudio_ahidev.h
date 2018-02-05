@@ -17,38 +17,40 @@
  *               <http://www.gnu.org/licenses/>.                           *
  ***************************************************************************/
 
-#ifdef mc68060
-#define __CPU__ "mc68060"
-#elif defined  mc68040
-#define __CPU__ "mc68040"
-#elif  defined mc68030
-#define __CPU__ "mc68030"
-#elif  defined mc68020
-#define __CPU__ "mc68020"
-#elif  defined mc68000
-#define __CPU__ "mc68000"
-#else
-#define __CPU__ "???????"
-#endif
+/*
+ *  * portaudio_ahidev.h
+ *
+ *  Created on: Nov 28, 2017
+ *      Author: developer
+ */
 
-#ifdef __HAVE_68881__
-#define __FPU__ "+mc68881"
-#else
-#define __FPU__ ""
-#endif
+#ifndef SRC_AMIGA_PORTAUDIO_PORTAUDIO_AHIDEV_H_
+#define SRC_AMIGA_PORTAUDIO_PORTAUDIO_AHIDEV_H_
 
 
 
-#define      VERSION       "2"
-#define      REVISION      "1"                     /* Revision always starts with 1 ! */
-//#define      DATE          "15.07.2017"   /* comes from make-command line as CXXFLAGS+=-DDATE=\\\"$(date +'%d.%m.%Y')\\\" */
-#define      PROGNAME      "espeak"
-//#define      COMMENT       "BETA-Version, Alexander Fritsch, selco, based on espeak-1.48.15 by Jonathan Duddington"
-#define      COMMENT       "Alexander Fritsch, selco, based on espeak-1.48.15 by Jonathan Duddington"
+#include "../portaudio18.h"
 
-#define      VERS          PROGNAME" " VERSION "." REVISION
-#define      VERSTAG       "\0$VER: " PROGNAME " " VERSION "." REVISION " (" DATE ") " COMMENT ", compiled for " __CPU__  __FPU__
+/* prototypes to be used in general portaudio.cpp only */
 
-char versiontag[] = VERSTAG;
+PaError Pa_StartStream_ahidev( PortAudioStream *stream );
+PaError Pa_AbortStream_ahidev( PortAudioStream *stream );
+PaError Pa_StreamActive_ahidev( PortAudioStream *stream );
+PaError Pa_OpenDefaultStream_ahidev( PortAudioStream** stream,
+		int numInputChannels,
+		int numOutputChannels,
+		PaSampleFormat sampleFormat,
+		double sampleRate,
+		unsigned long framesPerBuffer,
+		unsigned long numberOfBuffers,
+		PortAudioCallback *callback,
+		void *userData );
+PaError Pa_CloseStream_ahidev( PortAudioStream *stream );
+PaError Pa_Initialize_ahidev( void );
+PaError Pa_GetSampleSize_ahidev( PaSampleFormat format );
+void Abort_Pa_CloseStream_ahidev (void);
 
-char toolchain_ver[] = "\0$TOOLCHAIN_VER: " TOOLCHAIN_VER;   /* This macro comes from Makefile.amiga and contains git hash */
+extern unsigned int g_AHI_Unit;
+
+
+#endif /* SRC_AMIGA_PORTAUDIO_PORTAUDIO_AHIDEV_H_ */
