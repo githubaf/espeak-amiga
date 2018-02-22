@@ -161,6 +161,8 @@ VOID  EspeakAudioTask(VOID)
 							if(PortAudioStreamData->portStartStop)
 							{
 
+												KPrintF("Attempting to open Audio.device\n");
+								
 								PortAudioStreamData->AIOptr1->ioa_Request.io_Message.mn_ReplyPort=PortAudioStreamData->port1;
 								PortAudioStreamData->AIOptr1->ioa_Request.io_Message.mn_Node.ln_Pri=127; 
 								PortAudioStreamData->AIOptr1->ioa_Request.io_Message.mn_Length=sizeof(struct IOAudio);

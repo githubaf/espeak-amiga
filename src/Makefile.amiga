@@ -6,13 +6,14 @@ VAMOS=$(shell uname | grep -q -v AmigaOS && echo vamos)
 
 # set the right compiler
 
-#␣gcc2.95.3,␣this␣one␣produces␣fine␣code␣with␣-O2¬
+#gcc2.95.3, this one produces fine code with -O2 
 COMPILER_DIR=~/opt/m68k-amigaos/bin
 
 #COMPILER_DIR=~/opt/m68k-amigaos_gcc6/bin
 
-#␣this␣one␣produces␣fine␣code␣with␣-O2¬
+# this one produces fine code with -O2
 #COMPILER_DIR=~/opt/m68k-amigaos_1Feb/bin     # this one produces fine code with -O2
+#COMPILER_DIR=~/opt/m68k-amigaos_6Feb/bin
 
 CXX=$(shell uname | grep -q -v AmigaOS && echo $(COMPILER_DIR)/m68k-amigaos-gcc || echo gcc )
 
@@ -86,9 +87,9 @@ $(COMPILER_DIR)/toolchain_commit.txt:
 	@echo
 	@echo "#############################################################################"
 	@echo "toolchain_commit.txt not found in $(COMPILER_DIR), Please create one!"
-	@echo "cd $(COMPILER_DIR)"
-	@echo␣ echo https/:github.com/... > $PREFIX/bin/toolchain_commit.txt
-	@echo "git log -1 >>toolchain_commit.txt"
+	@echo "cd ~/amigaos-cross-toolchain_gcc_xxx"
+	@echo "echo https://github.com/xxx/amigaos-cross-toolchain > $(COMPILER_DIR)/toolchain_commit.txt"
+	@echo "git log -1 >>$(COMPILERDIR)/toolchain_commit.txt"
 	@echo "#############################################################################"
 	@echo
 	@false

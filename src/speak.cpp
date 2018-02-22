@@ -531,7 +531,7 @@ void ShowTotalSTackUsage(void)
 #endif
 
 #ifdef __AMIGA__
-    extern void (*Abort_Pa_CloseStream_FctPtr) (void);   /* used for in atexit() for CTRL-C handling */
+    extern void Abort_Pa_CloseStream (void);   /* used for in atexit() for CTRL-C handling */
 	void set_ahi_devide(unsigned int unit);
 #endif
 
@@ -599,7 +599,7 @@ int main (int argc, char **argv)
 
 // define comes from gcc
 #ifdef __AMIGA__
-	atexit(Abort_Pa_CloseStream_FctPtr);   /* delete task an cleanup Amiga resources in case of CTRL-C */
+	atexit(Abort_Pa_CloseStream);   /* delete task an cleanup Amiga resources in case of CTRL-C */
 #endif
 
 // define via command line if needed

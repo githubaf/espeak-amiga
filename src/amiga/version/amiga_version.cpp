@@ -40,7 +40,7 @@
 
 
 #define      VERSION       "2"
-#define      REVISION      "1"                     /* Revision always starts with 1 ! */
+#define      REVISION      "2"                     /* Revision always starts with 1 ! */
 //#define      DATE          "15.07.2017"   /* comes from make-command line as CXXFLAGS+=-DDATE=\\\"$(date +'%d.%m.%Y')\\\" */
 #define      PROGNAME      "espeak"
 //#define      COMMENT       "BETA-Version, Alexander Fritsch, selco, based on espeak-1.48.15 by Jonathan Duddington"

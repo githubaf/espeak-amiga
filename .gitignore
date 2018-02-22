@@ -1,0 +1,11 @@
+*.lha
+*.tar.gz
+*.tar.bz2
+*.zip
+*~
+*.o
+*.gcno
+*.map
+src/espeak
+src/espeak-m68*
+tmp/

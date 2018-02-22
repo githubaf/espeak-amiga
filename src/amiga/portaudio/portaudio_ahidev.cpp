@@ -188,7 +188,9 @@ VOID  EspeakAudioTask_AHI(VOID)
 									case STC_START:
 										
 										worktodo = TRUE;
+										link=NULL;                      
 										break;
+
 									case STC_STOP:
 										
 										worktodo = FALSE;
@@ -335,8 +337,10 @@ PaError Pa_StartStream_ahidev( PortAudioStream *stream )
 }
 PaError Pa_AbortStream_ahidev( PortAudioStream *stream )
 {
+	((PortAudioStreamStruct*)stream)->StreamActive=0;
 	return paNoError;
 }
+
 PaError Pa_StreamActive_ahidev( PortAudioStream *stream )
 {
 	if(stream)
