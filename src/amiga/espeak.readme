@@ -3,7 +3,7 @@ Short:        amiga-port of espeak speech synthesizer
 Author:       jonsd@users.sourceforge.net (Jonathan Duddington)
 Uploader:     selco@t-online.de (Alexander Fritsch)
 Type:         util/sys
-Version:      2.1
+Version:      2.2
 Architecture: m68k-amigaos
 Distribution: Aminet
 
