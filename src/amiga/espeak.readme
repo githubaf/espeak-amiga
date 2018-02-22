@@ -94,4 +94,6 @@ Version 2.1
         *Added support for AHI. use --ahi or --ahi=unit (unit=0...3) to activate
         *Fixed bug in --path handling
 
-
+Version 2.2
+        *BugFix: in AHI multiline-mode all but the first line were stuttering
+        *Bugfix: CTRL-C did not end the audiotask in case of AHI
